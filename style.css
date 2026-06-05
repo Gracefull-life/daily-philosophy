@@ -1,0 +1,328 @@
+/* ═══════════════════════════════════════════════
+   매일 철학 — 스타일시트
+   콘셉트: 크림색 종이 위 글 · 명조 폰트 · 넉넉한 여백
+   나중에 다크모드 추가 시 :root 안의 변수값만 바꾸면 됨
+═══════════════════════════════════════════════ */
+
+/* 한글 세리프(명조) 폰트 불러오기.
+   인터넷 연결이 없으면 아래 fallback 폰트로 자동 전환됨 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&display=swap');
+
+
+/* ── 색상 변수 ──────────────────────────────────
+   이 변수들만 바꾸면 전체 색이 바뀜.
+   다크모드 추가 시 여기에 @media (prefers-color-scheme: dark) { :root { ... } } 만 추가하면 됨
+──────────────────────────────────────────────── */
+:root {
+  /* 배경 */
+  --bg:            #f5f0e8;   /* 메인 배경: 따뜻한 크림 */
+  --surface:       #ede7db;   /* 카드·입력창: 살짝 진한 크림 */
+  --surface-alt:   #e5ddd0;   /* 해설 박스: 한 단계 더 진한 크림 */
+
+  /* 테두리 */
+  --border:        #d5cec4;   /* 기본 테두리 */
+  --border-dark:   #bfb8ae;   /* 강조 테두리 */
+
+  /* 글자 */
+  --text:          #3a3530;   /* 본문: 따뜻한 진갈색 */
+  --text-muted:    #8c8278;   /* 보조: 날짜·철학자명·레이블 */
+  --text-faint:    #b8b0a7;   /* 희미: 출처 주의 문구 */
+
+  /* 포인트 색 */
+  --accent:        #9b7e5c;   /* 갈색 계열 — blockquote 선, 저장 버튼, 피드백 */
+  --accent-dark:   #7d6345;   /* 버튼 호버 */
+
+  /* 채워진 버튼 위 글자 */
+  --btn-text:      #faf7f2;
+}
+
+
+/* ── 기본 초기화 ──────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* ── 전체 body ───────────────────────────────── */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+
+  /* 한글 세리프 우선 → 시스템 명조 → 영문 세리프 → 기본 세리프 */
+  font-family: 'Noto Serif KR', 'Batang', '바탕', 'Georgia', serif;
+  font-size: 1rem;
+  line-height: 1.9;
+
+  /* 위아래 여백 넉넉히. 아래는 스크롤 끝에서 숨 쉴 공간 */
+  padding: 52px 24px 88px;
+}
+
+
+/* ── 콘텐츠 폭 제한 + 가운데 정렬 ──────────────── */
+header, main {
+  max-width: 680px;
+  margin-left:  auto;
+  margin-right: auto;
+}
+
+
+/* ═══════════════════════════════════════════════
+   헤더
+═══════════════════════════════════════════════ */
+header {
+  text-align: center;
+  padding-bottom: 32px;
+  margin-bottom: 52px;
+  border-bottom: 1px solid var(--border);
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 400;       /* 너무 굵지 않게 — 차분한 느낌 */
+  letter-spacing: 0.2em;  /* 자간 넓혀 제목에 여유 줌 */
+  margin-bottom: 10px;
+}
+
+#today-date {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+}
+
+
+/* ═══════════════════════════════════════════════
+   섹션 공통
+═══════════════════════════════════════════════ */
+section {
+  margin-bottom: 56px;
+}
+
+/* 섹션 소제목: 내용보다 눈에 덜 띄어야 함 */
+h2 {
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  padding-bottom: 12px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+
+/* ═══════════════════════════════════════════════
+   오늘의 명제 — 앱의 주인공
+═══════════════════════════════════════════════ */
+#proposition-section blockquote {
+  font-size: 1.2rem;
+  line-height: 2.05;
+  padding: 26px 30px;
+  margin: 0 0 16px;
+
+  /* 왼쪽 선: 주인공답게 살짝 강조 */
+  border-left: 3px solid var(--accent);
+  background-color: var(--surface);
+  border-radius: 0 10px 10px 0;
+}
+
+#philosopher-name {
+  text-align: right;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  padding-right: 4px;
+}
+
+/* 출처 불확실 경고 문구 — app.js가 동적으로 추가하는 p 태그
+   #philosopher-name 을 제외한 나머지 p에만 적용 */
+#proposition-section p:not(#philosopher-name) {
+  margin-top: 16px;
+  font-size: 0.76rem;
+  color: var(--text-faint);   /* 아주 흐리게 — 방해 안 되게 */
+  line-height: 1.6;
+}
+
+
+/* ═══════════════════════════════════════════════
+   나의 생각 (입력 영역)
+═══════════════════════════════════════════════ */
+
+/* "정답은 없어요. 당신을 알아가는 과정이에요." */
+#write-guide {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+/* 입력창 */
+textarea#my-thought {
+  display: block;           /* width: 100%이 제대로 먹히려면 블록 요소여야 함 */
+  width: 100%;
+  padding: 16px 20px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+
+  color: var(--text);
+  font-family: inherit;     /* body 폰트 그대로 — 입력한 글도 명조로 보임 */
+  font-size: 0.97rem;
+  line-height: 1.9;
+
+  resize: vertical;         /* 세로로만 크기 조절 가능 */
+  outline: none;
+  transition: border-color 0.25s ease;
+}
+
+textarea#my-thought::placeholder {
+  color: var(--text-faint);
+}
+
+/* 입력창 클릭 시 테두리 색 강조 */
+textarea#my-thought:focus {
+  border-color: var(--accent);
+}
+
+
+/* ── 버튼 공통 ─────────────────────────────────── */
+button {
+  font-family: inherit;
+  font-size: 0.92rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.22s ease, color 0.22s ease, border-color 0.22s ease;
+}
+
+
+/* 저장하기 버튼 */
+#save-button {
+  /* HTML의 <br> 다음에 오므로 margin-top으로 간격 줌 */
+  margin-top: 14px;
+  padding: 10px 30px;
+  background-color: var(--accent);
+  color: var(--btn-text);
+}
+
+#save-button:hover {
+  background-color: var(--accent-dark);
+}
+
+
+/* 저장 완료 / 오류 메시지 */
+#save-feedback {
+  margin-top: 12px;
+  min-height: 1.4em;      /* 텍스트 없을 때도 자리 잡아 레이아웃 흔들림 방지 */
+  font-size: 0.88rem;
+  color: var(--accent);
+}
+
+
+/* 철학자의 관점 보기 버튼 — 저장 후에만 나타남 */
+#commentary-btn {
+  margin-top: 8px;
+  padding: 8px 22px;
+  background-color: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+#commentary-btn:hover {
+  background-color: var(--surface);
+  color: var(--text);
+  border-color: var(--border-dark);
+}
+
+
+/* 해설 박스 */
+#commentary-box {
+  margin-top: 20px;
+  padding: 26px 28px;
+  background-color: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+/* "이건 정답이 아니라 또 하나의 관점이에요." */
+#commentary-disclaimer {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* 해설 본문 */
+#commentary-text {
+  font-size: 0.95rem;
+  line-height: 2;
+  color: var(--text);
+}
+
+
+/* ═══════════════════════════════════════════════
+   지난 기록
+═══════════════════════════════════════════════ */
+#history-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;              /* 카드 사이 간격 */
+}
+
+/* 기록 카드 한 장 */
+#history-list li {
+  padding: 20px 26px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+/* 날짜 줄 */
+#history-list li p:first-child {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  letter-spacing: 0.03em;
+}
+
+/* 명제 줄 */
+#history-list li p:nth-child(2) {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* 내가 쓴 생각 줄 */
+#history-list li p:last-child {
+  font-size: 0.95rem;
+  line-height: 1.9;
+}
+
+
+/* ═══════════════════════════════════════════════
+   모바일 반응형 — 600px 이하
+═══════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  body {
+    padding: 36px 18px 64px;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+    letter-spacing: 0.15em;
+  }
+
+  #proposition-section blockquote {
+    font-size: 1.07rem;
+    padding: 20px 20px;
+  }
+
+  #commentary-box,
+  #history-list li {
+    padding: 18px 20px;
+  }
+}

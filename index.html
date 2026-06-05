@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!-- 이 파일이 HTML 문서임을 브라우저에게 알리는 선언 -->
+
+<html lang="ko">
+<!-- 페이지 전체를 감싸는 태그. lang="ko"는 이 페이지가 한국어임을 표시 -->
+
+<head>
+  <!-- head 안의 내용은 화면에 직접 보이지 않음. 브라우저에게 전달하는 설정들 -->
+  <meta charset="UTF-8">
+  <!-- 한글이 깨지지 않도록 문자 인코딩을 UTF-8로 설정 -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 나중에 모바일에서도 잘 보이도록 하는 설정. 지금은 몰라도 됨 -->
+
+  <title>매일 철학</title>
+  <!-- 브라우저 탭에 표시되는 제목 -->
+
+  <link rel="stylesheet" href="style.css">
+  <!-- style.css 연결. 이 줄이 없으면 CSS가 아무 효과가 없음 -->
+</head>
+
+<body>
+<!-- body 안의 내용만 실제 화면에 보임. 모든 눈에 보이는 요소는 여기 들어감 -->
+
+  <!-- ① 페이지 상단: 앱 제목과 오늘 날짜 -->
+  <header>
+    <h1>매일 철학</h1>
+    <!-- h1 = 가장 큰 제목. 페이지에서 한 번만 쓰는 게 관례 -->
+
+    <p id="today-date">날짜 로딩 중...</p>
+    <!-- id="today-date" : 나중에 app.js가 이 자리를 찾아서 실제 날짜로 바꿔 넣을 예정 -->
+  </header>
+
+  <main>
+  <!-- main = 페이지의 핵심 내용 영역. header/footer를 제외한 본문 -->
+
+    <!-- ② 오늘의 명제 카드 -->
+    <section id="proposition-section">
+      <!-- section = 관련 내용을 묶는 구역. id로 이름표를 붙여 나중에 JS가 찾을 수 있게 함 -->
+
+      <h2>오늘의 명제</h2>
+
+      <blockquote id="proposition-text">
+        명제가 여기 표시됩니다
+      </blockquote>
+      <!-- blockquote = 인용문을 담는 태그. 철학 명제를 표시하기 적합 -->
+      <!-- id="proposition-text" : app.js가 실제 명제 텍스트로 교체할 자리 -->
+
+      <p id="philosopher-name">- 철학자 이름</p>
+      <!-- id="philosopher-name" : app.js가 철학자 이름으로 교체할 자리 -->
+    </section>
+
+    <!-- ③ 내 생각 작성 영역 -->
+    <section id="write-section">
+      <h2>나의 생각</h2>
+
+      <p id="write-guide">정답은 없어요. 당신을 알아가는 과정이에요.</p>
+      <!-- 입력해도 사라지지 않는 고정 안내 문구 -->
+      <!-- placeholder와 달리 항상 보임 -->
+
+      <textarea id="my-thought" rows="6" placeholder="정답은 없어요. 떠오르는 대로 적어보세요."></textarea>
+      <!-- textarea = 여러 줄 텍스트 입력창 -->
+      <!-- rows="6" : 입력창 높이 (6줄짜리) -->
+      <!-- placeholder : 아무것도 안 적었을 때 흐리게 보이는 안내 문구 (입력 시작하면 사라짐) -->
+      <!-- id="my-thought" : 저장 버튼 눌렀을 때 app.js가 이 내용을 읽어올 자리 -->
+
+      <br>
+      <!-- 줄바꿈 (line break). 버튼을 아래 줄로 내리기 위해 사용 -->
+
+      <button id="save-button">저장하기</button>
+      <!-- button = 클릭 가능한 버튼 -->
+      <!-- id="save-button" : app.js가 이 버튼에 "클릭하면 저장" 기능을 붙임 -->
+
+      <p id="save-feedback"></p>
+      <!-- 저장 결과 메시지가 여기 표시됨. 처음엔 비어 있고, app.js가 텍스트를 채움 -->
+
+      <button id="commentary-btn" style="display:none;">철학자의 관점 보기</button>
+      <!-- style="display:none" : 처음엔 완전히 숨겨짐 -->
+      <!-- app.js가 저장 완료 후, 해당 명제에 해설이 있을 때만 이 버튼을 나타나게 함 -->
+
+      <div id="commentary-box" style="display:none;">
+        <!-- 처음엔 숨겨진 상태. 위 버튼을 누를 때마다 보였다 숨겨졌다 반복함 -->
+
+        <p id="commentary-disclaimer">이건 정답이 아니라 또 하나의 관점이에요.</p>
+        <!-- 고정 안내 문구: 해설이 열릴 때마다 항상 맨 위에 표시됨 -->
+
+        <p id="commentary-text"></p>
+        <!-- 실제 해설 내용: app.js가 오늘 명제의 commentary 필드 값을 여기 채워 넣음 -->
+      </div>
+    </section>
+
+    <!-- ④ 과거 기록 목록 영역 -->
+    <section id="history-section">
+      <h2>지난 기록</h2>
+
+      <ul id="history-list">
+        <!-- ul = 순서 없는 목록 (bullet point 목록) -->
+        <!-- 지금은 비어 있음. app.js가 저장된 기록을 여기에 하나씩 추가할 예정 -->
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- JS 파일 연결 (body 맨 아래에 두는 게 관례) -->
+  <!-- propositions.js를 먼저 로드해야 app.js에서 PROPOSITIONS 배열을 쓸 수 있음 -->
+  <script src="propositions.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
