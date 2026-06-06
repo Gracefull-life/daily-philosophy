@@ -156,7 +156,11 @@ saveButton.addEventListener("click", function () {
     propositionId:    todayProposition.id,
     propositionText:  todayProposition.text,
     philosopher:      todayProposition.philosopher,
-    thought:          thoughtText
+    thought:          thoughtText,
+    savedAt:          Date.now()
+    // Date.now() = 지금 이 순간을 숫자로 표현 (밀리초 단위. 예: 1749843200000)
+    // 나중에 Date.now() - entry.savedAt 으로 경과 시간을 ms 단위로 계산할 수 있음
+    // 1시간 = 60 × 60 × 1000 = 3,600,000 ms
   };
 
   // ── 기존 기록을 localStorage에서 불러오기 ──
@@ -289,23 +293,20 @@ function renderHistory() {
 
   // ── 기록이 있으면 하나씩 화면에 추가 ──
   // entries는 저장할 때 unshift()로 맨 앞에 넣었으므로 이미 최신순 정렬 상태
-  entries.forEach(function (entry) {
-    // .forEach() = 배열의 각 항목을 순서대로 꺼내서 함수에 넘김
-    // entry = 현재 처리 중인 항목 하나 (날짜, 명제, 생각 등을 가진 객체)
+  entries.forEach(function (entry, index) {
+    // forEach의 두 번째 파라미터 index = 이 항목이 배열의 몇 번째인지 (0부터 시작)
+    // index 0 = 가장 최신 기록. 수정할 때 "배열의 몇 번째를 바꿀지" 알기 위해 필요
 
     // ── 목록 항목 뼈대 ──
     const li = document.createElement("li");
-    // <li> 요소를 메모리에 만듦 (아직 화면엔 없음)
 
     // ── 날짜 줄 ──
     const dateEl = document.createElement("p");
     dateEl.textContent = entry.date;
-    // entry.date = "2026년 5월 28일" 같은 값
 
     // ── 명제 줄 ──
     const propositionEl = document.createElement("p");
     propositionEl.textContent = "「" + entry.propositionText + "」 — " + entry.philosopher;
-    // 「」 = 글을 인용할 때 쓰는 따옴표 모양 기호
 
     // ── 내가 쓴 생각 줄 ──
     const thoughtEl = document.createElement("p");
@@ -316,10 +317,139 @@ function renderHistory() {
     li.appendChild(propositionEl);
     li.appendChild(thoughtEl);
 
+    // ── 수정 흔적 배지: 수정한 기록에만 표시 ──
+    if (entry.edited === true) {
+      const editedBadge = document.createElement("p");
+      editedBadge.className = "edited-badge";
+      // className = CSS에서 .edited-badge 로 스타일 적용
+
+      const d = new Date(entry.editedAt);
+      // new Date(숫자) = 밀리초 timestamp를 날짜/시간 객체로 변환
+      // 예: new Date(1749843200000) → "2026년 6월 13일 17시 30분" 같은 형태로 분해 가능
+
+      const editedTimeStr = (d.getMonth() + 1) + "월 "
+                          + d.getDate() + "일 "
+                          + d.getHours() + "시 "
+                          + String(d.getMinutes()).padStart(2, "0") + "분";
+      // d.getMonth() = 0~11 반환 → +1 해야 1~12
+      // d.getDate()  = 일 (1~31)
+      // d.getHours() = 시 (0~23)
+      // d.getMinutes() = 분 (0~59). padStart(2,"0") = 한 자리 수를 "05" 형태로 맞춤
+
+      editedBadge.textContent = "수정됨 · " + editedTimeStr;
+      li.appendChild(editedBadge);
+    }
+
+    // ── 수정 버튼: 저장 후 1시간 이내인 항목에만 표시 ──
+    const oneHour = 60 * 60 * 1000;
+    // 1시간을 밀리초로 환산: 60분 × 60초 × 1000ms = 3,600,000
+
+    const canEdit = entry.savedAt && (Date.now() - entry.savedAt) < oneHour;
+    // entry.savedAt  = 저장 당시 timestamp (없으면 undefined → falsy → canEdit = false)
+    // Date.now()     = 지금 이 순간의 timestamp
+    // 경과 시간(ms)이 oneHour보다 작을 때만 true
+
+    if (canEdit) {
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "수정";
+      editBtn.className = "edit-btn";
+
+      editBtn.addEventListener("click", function () {
+        showEditMode(li, index, entry.thought);
+      });
+
+      li.appendChild(editBtn);
+    }
+
     // ── 완성된 li를 목록(ul)에 추가해서 화면에 표시 ──
     historyList.appendChild(li);
   });
 }
+
+// ─────────────────────────────────────────────
+// 6단계: 수정 모드 — 카드를 편집 가능 상태로 전환
+// ─────────────────────────────────────────────
+
+function showEditMode(li, index, currentThought) {
+  // li           = 편집 모드로 바꿀 카드(<li> 요소)
+  // index        = localStorage 배열에서 이 항목의 위치
+  // currentThought = 현재 저장된 텍스트 (textarea에 미리 채워둘 내용)
+
+  // ── 기존 "수정" 버튼 제거 ──
+  const editBtn = li.querySelector(".edit-btn");
+  // .querySelector(".edit-btn") = li 안에서 클래스가 "edit-btn"인 요소를 찾음
+  li.removeChild(editBtn);
+
+  // ── 생각 텍스트(<p>)를 편집 가능한 textarea로 교체 ──
+  const thoughtEl = li.querySelector("p:last-of-type");
+  // "p:last-of-type" = li 안의 <p> 태그 중 마지막 것 (= 내가 쓴 생각 줄)
+
+  const textarea = document.createElement("textarea");
+  textarea.value = currentThought;   // 기존 내용을 textarea에 미리 채워둠
+  textarea.rows = 4;
+  textarea.className = "edit-textarea";
+
+  li.replaceChild(textarea, thoughtEl);
+  // replaceChild(새 요소, 교체할 요소) = thoughtEl을 textarea로 바꿔치기
+
+  // ── "저장" 버튼 ──
+  const saveBtn = document.createElement("button");
+  saveBtn.textContent = "저장";
+  saveBtn.className = "save-edit-btn";
+
+  saveBtn.addEventListener("click", function () {
+    const newText = textarea.value.trim();
+    if (newText === "") {
+      return;   // 빈 칸이면 저장 안 함
+    }
+    saveEditedThought(index, newText);
+    // index 위치의 항목을 newText로 업데이트하고 화면을 다시 그림
+  });
+
+  // ── "취소" 버튼 ──
+  const cancelBtn = document.createElement("button");
+  cancelBtn.textContent = "취소";
+  cancelBtn.className = "cancel-edit-btn";
+
+  cancelBtn.addEventListener("click", function () {
+    renderHistory();
+    // 수정 내용 버리고 화면을 원래대로 다시 그림
+  });
+
+  li.appendChild(saveBtn);
+  li.appendChild(cancelBtn);
+}
+
+
+function saveEditedThought(index, newText) {
+  // index   = 수정할 항목이 배열의 몇 번째인지
+  // newText = 사용자가 새로 입력한 텍스트
+
+  // ── localStorage에서 전체 기록 불러오기 ──
+  const savedRaw = localStorage.getItem("philosophy-entries");
+  if (savedRaw === null) return;   // 기록이 없으면 아무것도 안 함
+
+  const entries = JSON.parse(savedRaw);
+
+  // ── 해당 항목의 thought만 새 텍스트로 교체, 수정 흔적 기록 ──
+  entries[index].thought   = newText;
+  // .thought = 그 객체 안의 thought 필드만 골라서 바꿈
+  // 나머지 필드(date, propositionText 등)는 그대로 유지됨
+
+  entries[index].edited    = true;
+  // edited = true → renderHistory가 "수정됨" 배지를 표시하는 조건
+
+  entries[index].editedAt  = Date.now();
+  // editedAt = 수정한 이 순간의 timestamp → 배지에 "수정됨 · 6월 7일 14시 03분" 식으로 표시
+
+  // ── 수정된 배열을 localStorage에 다시 저장 ──
+  localStorage.setItem("philosophy-entries", JSON.stringify(entries));
+
+  // ── 화면 새로 그리기 ──
+  renderHistory();
+  // 수정된 내용이 바로 반영되어 보임
+}
+
 
 // ── 페이지가 열릴 때 바로 기록 목록 표시 ──
 renderHistory();

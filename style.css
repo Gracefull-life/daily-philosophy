@@ -364,6 +364,85 @@ button {
 
 
 /* ═══════════════════════════════════════════════
+   지난 기록 — 수정 기능
+═══════════════════════════════════════════════ */
+
+/* "수정됨" 배지 — 눈에 잘 안 띄게, 흔적만 남기는 느낌 */
+.edited-badge {
+  margin-top: 8px;
+  font-size: 0.74rem;
+  color: var(--text-faint);   /* 가장 흐린 색 — 방해 안 되게 */
+  letter-spacing: 0.02em;
+}
+
+
+/* "수정" 버튼 — 카드 안에서 눈에 덜 띄게 */
+.edit-btn {
+  margin-top: 10px;
+  padding: 4px 14px;
+  font-size: 0.78rem;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.edit-btn:hover {
+  background-color: var(--surface-alt);
+  color: var(--text);
+  border-color: var(--border-dark);
+}
+
+/* 편집 모드 textarea — 카드 안에 자연스럽게 */
+.edit-textarea {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 10px 14px;
+  background-color: var(--bg);
+  border: 1px solid var(--accent);   /* 편집 중임을 색으로 표시 */
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.85;
+  resize: vertical;
+  outline: none;
+}
+
+/* 편집 모드 "저장" 버튼 */
+.save-edit-btn {
+  margin-top: 8px;
+  margin-right: 6px;
+  padding: 5px 16px;
+  font-size: 0.82rem;
+  background-color: var(--accent);
+  color: var(--btn-text);
+  border-radius: 4px;
+}
+
+.save-edit-btn:hover {
+  background-color: var(--accent-dark);
+}
+
+/* 편집 모드 "취소" 버튼 */
+.cancel-edit-btn {
+  margin-top: 8px;
+  padding: 5px 16px;
+  font-size: 0.82rem;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.cancel-edit-btn:hover {
+  background-color: var(--surface-alt);
+  color: var(--text);
+}
+
+
+/* ═══════════════════════════════════════════════
    모바일 반응형 — 600px 이하
 ═══════════════════════════════════════════════ */
 @media (max-width: 600px) {
