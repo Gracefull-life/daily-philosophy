@@ -24,6 +24,11 @@
 
   <!-- ① 페이지 상단: 앱 제목과 오늘 날짜 -->
   <header>
+    <button id="theme-toggle" aria-label="다크모드 전환"></button>
+    <!-- id="theme-toggle"  : app.js가 이 버튼에 클릭 기능을 붙일 이름표 -->
+    <!-- aria-label         : 버튼 안에 글자가 없으므로 스크린리더용 설명 -->
+    <!-- 버튼 안의 🌙/☀️ 아이콘은 CSS의 ::before 로 표시됨 (style.css 참고) -->
+
     <h1>매일 철학</h1>
     <!-- h1 = 가장 큰 제목. 페이지에서 한 번만 쓰는 게 관례 -->
 

@@ -72,10 +72,36 @@ header, main {
    헤더
 ═══════════════════════════════════════════════ */
 header {
+  position: relative;   /* 버튼을 header 기준으로 절대 위치시키기 위한 기준점 설정 */
   text-align: center;
   padding-bottom: 32px;
   margin-bottom: 52px;
   border-bottom: 1px solid var(--border);
+}
+
+/* 라이트/다크 전환 토글 버튼 */
+#theme-toggle {
+  position: absolute;   /* 일반 흐름에서 벗어나 header 기준으로 위치 지정 */
+  top: 0;
+  right: 0;             /* 오른쪽 위 모서리에 고정 */
+
+  width: 36px;
+  height: 36px;
+  padding: 0;
+
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50%;   /* 원형 버튼 */
+  font-size: 1.1rem;
+
+  /* button 공통 설정 덮어쓰기 */
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+#theme-toggle:hover {
+  background-color: var(--surface);
+  border-color: var(--border-dark);
 }
 
 h1 {
@@ -301,6 +327,40 @@ button {
   font-size: 0.95rem;
   line-height: 1.9;
 }
+
+
+/* ═══════════════════════════════════════════════
+   다크모드 색 세트
+   HTML 태그에 data-theme="dark" 속성이 붙으면
+   :root의 변수들이 아래 값으로 덮어씌워짐.
+   JS가 속성 하나만 토글하면 전체 색이 바뀌는 구조.
+═══════════════════════════════════════════════ */
+[data-theme="dark"] {
+  /* 배경 — 순수 검정 대신 짙은 세피아·갈색 계열 */
+  --bg:            #1e1a14;   /* 메인 배경: 깊은 세피아 */
+  --surface:       #2a2419;   /* 카드·입력창: 살짝 밝은 갈색 */
+  --surface-alt:   #322d21;   /* 해설 박스: 조금 더 밝은 갈색 */
+
+  /* 테두리 */
+  --border:        #4a4235;   /* 기본 테두리: 어두운 황갈색 */
+  --border-dark:   #5e5244;   /* 강조 테두리 */
+
+  /* 글자 — 눈부시지 않은 따뜻한 크림 */
+  --text:          #e8dccf;   /* 본문: 부드러운 크림 */
+  --text-muted:    #a09080;   /* 보조: 따뜻한 회갈색 */
+  --text-faint:    #6b5f52;   /* 희미: 어두운 갈색 */
+
+  /* 포인트 색 — 라이트보다 밝게 (어두운 배경에서 잘 보이게) */
+  --accent:        #c4956a;   /* 버튼·강조: 밝은 황갈색 */
+  --accent-dark:   #d4a87a;   /* 호버: 더 밝은 황갈색 */
+
+  /* 채워진 버튼 위 글자 */
+  --btn-text:      #1e1a14;   /* 배경색과 같게 — 대비 확보 */
+}
+
+/* 다크모드에서 토글 버튼 아이콘 변경 */
+[data-theme="dark"] #theme-toggle::before { content: "☀️"; }
+#theme-toggle::before                     { content: "🌙"; }
 
 
 /* ═══════════════════════════════════════════════

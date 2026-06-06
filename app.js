@@ -3,6 +3,50 @@
 // 이 파일은 propositions.js가 먼저 로드된 뒤에 실행됨 (index.html에서 순서가 중요)
 
 // ─────────────────────────────────────────────
+// 0단계: 테마(라이트/다크) — 맨 먼저 실행
+// 다른 코드보다 앞에 있어야 페이지가 그려지기 전에 테마가 적용되어
+// 화면이 깜빡이지 않음
+// ─────────────────────────────────────────────
+
+const themeToggleBtn = document.getElementById("theme-toggle");
+// HTML의 <button id="theme-toggle"> 을 찾아서 변수에 담음
+
+// ── 저장된 테마를 불러와서 바로 적용 ──
+const savedTheme = localStorage.getItem("theme");
+// localStorage.getItem("theme") = 이전에 저장해둔 값을 꺼냄
+// 처음 방문이면 null, 이전에 다크로 바꿨으면 "dark", 라이트면 "light"
+
+if (savedTheme === "dark") {
+  document.documentElement.setAttribute("data-theme", "dark");
+  // document.documentElement = 페이지의 <html> 태그 그 자체
+  // setAttribute("data-theme", "dark") = <html data-theme="dark"> 로 바꿈
+  // 이 속성이 붙으면 style.css의 [data-theme="dark"] 색 세트가 발동함
+}
+
+// ── 버튼 클릭 시 테마 전환 ──
+themeToggleBtn.addEventListener("click", function () {
+
+  const current = document.documentElement.getAttribute("data-theme");
+  // getAttribute("data-theme") = 지금 <html> 에 붙은 data-theme 값을 읽음
+  // 다크모드면 "dark" / 라이트모드면 null (속성 자체가 없음)
+
+  if (current === "dark") {
+    // 현재 다크 → 라이트로 전환
+    document.documentElement.removeAttribute("data-theme");
+    // removeAttribute = 속성을 완전히 제거. :root 변수가 다시 작동함
+    localStorage.setItem("theme", "light");
+    // 다음에 이 페이지를 열 때도 라이트모드로 시작하도록 저장
+
+  } else {
+    // 현재 라이트 → 다크로 전환
+    document.documentElement.setAttribute("data-theme", "dark");
+    localStorage.setItem("theme", "dark");
+    // 다음에 열 때도 다크모드로 시작하도록 저장
+  }
+});
+
+
+// ─────────────────────────────────────────────
 // 1단계: 오늘 날짜를 가져와서 화면에 표시
 // ─────────────────────────────────────────────
 
