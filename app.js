@@ -102,6 +102,58 @@ philosopherNameElement.textContent = "— " + todayProposition.philosopher;
 // index.html의 <p id="philosopher-name"> 자리에 철학자 이름을 넣음
 // "— " 은 단순한 꾸밈 문자 (대시)
 
+
+// ─────────────────────────────────────────────
+// 3-1단계: 즐겨찾기 — 별 버튼 토글 + localStorage
+// ─────────────────────────────────────────────
+
+const favoriteBtn = document.getElementById("favorite-btn");
+// HTML의 <button id="favorite-btn"> 을 찾아서 변수에 담음
+
+// 즐겨찾기 목록을 localStorage에서 읽어오는 함수
+// 여러 곳에서 쓰이므로 함수로 한 번 묶어둠
+function getFavorites() {
+  const raw = localStorage.getItem("philosophy-favorites");
+  // raw = "[1, 4, 10]" 같은 문자열 / 한 번도 저장 안 했으면 null
+
+  return raw ? JSON.parse(raw) : [];
+  // raw ? A : B = raw가 null이 아니면 A, null이면 B
+  // → 저장된 게 있으면 배열로 변환해서 반환, 없으면 빈 배열 반환
+}
+
+// ── 페이지 열릴 때: 오늘 명제가 이미 즐겨찾기 됐는지 확인 ──
+if (getFavorites().includes(todayProposition.id)) {
+  // .includes(값) = 배열 안에 이 값이 있으면 true
+  favoriteBtn.textContent = "★";
+  favoriteBtn.classList.add("favorited");
+  // classList.add("favorited") = 버튼에 "favorited" 클래스를 붙임
+  // → CSS의 #favorite-btn.favorited 스타일(포인트 색)이 적용됨
+}
+
+// ── 별 버튼 클릭 시 즐겨찾기 토글 ──
+favoriteBtn.addEventListener("click", function () {
+  const favorites = getFavorites();   // 현재 즐겨찾기 목록을 가져옴
+  const id = todayProposition.id;     // 오늘 명제의 고유 번호
+
+  if (favorites.includes(id)) {
+    // 이미 즐겨찾기 된 상태 → 해제
+    const updated = favorites.filter(function (fav) { return fav !== id; });
+    localStorage.setItem("philosophy-favorites", JSON.stringify(updated));
+    favoriteBtn.textContent = "☆";
+    favoriteBtn.classList.remove("favorited");
+    renderFavorites();   // 즐겨찾기 섹션에서 이 명제를 즉시 제거
+
+  } else {
+    // 즐겨찾기 안 된 상태 → 추가
+    favorites.push(id);
+    localStorage.setItem("philosophy-favorites", JSON.stringify(favorites));
+    favoriteBtn.textContent = "★";
+    favoriteBtn.classList.add("favorited");
+    renderFavorites();   // 즐겨찾기 섹션에 이 명제를 즉시 추가
+  }
+});
+
+
 // ─────────────────────────────────────────────
 // 4단계: 저장하기 버튼 기능 + localStorage 설명
 // ─────────────────────────────────────────────
@@ -451,7 +503,85 @@ function saveEditedThought(index, newText) {
 }
 
 
+// ─────────────────────────────────────────────
+// 7단계: 즐겨찾기 섹션 그리기
+// ─────────────────────────────────────────────
+
+function renderFavorites() {
+  const favoritesList = document.getElementById("favorites-list");
+
+  // ── 목록 초기화 ──
+  favoritesList.innerHTML = "";
+
+  const favIds = getFavorites();
+  // getFavorites() = 앞에서 만들어둔 함수. localStorage에서 id 배열을 반환
+
+  // ── 즐겨찾기가 없을 때 안내 ──
+  if (favIds.length === 0) {
+    const emptyMsg = document.createElement("li");
+    emptyMsg.textContent = "아직 즐겨찾기한 명제가 없어요.";
+    emptyMsg.className = "favorites-empty";
+    // className = CSS의 .favorites-empty 스타일(점선 테두리, 중앙 정렬) 적용
+    favoritesList.appendChild(emptyMsg);
+    return;
+  }
+
+  // ── 즐겨찾기된 명제를 하나씩 카드로 그리기 ──
+  favIds.forEach(function (id) {
+
+    const prop = PROPOSITIONS.find(function (p) { return p.id === id; });
+    // PROPOSITIONS.find() = 배열에서 조건을 만족하는 첫 번째 항목 하나를 반환
+    // p.id === id → id가 일치하는 명제 객체를 찾음
+    // (filter가 조건 맞는 것 전부를 새 배열로 반환하는 것과 달리, find는 하나만 반환)
+
+    if (!prop) return;
+    // !prop = prop이 undefined인 경우 (propositions.js에서 해당 id가 삭제됐을 때)
+    // return = 이 항목은 건너뛰고 다음 id로 진행
+
+    const li = document.createElement("li");
+
+    // ── 명제 텍스트 줄 ──
+    const textEl = document.createElement("p");
+    textEl.textContent = "「" + prop.text + "」";
+
+    // ── 철학자 이름 줄 ──
+    const philosopherEl = document.createElement("p");
+    philosopherEl.textContent = "— " + prop.philosopher;
+
+    // ── ★ 해제 버튼 ──
+    const unfavoriteBtn = document.createElement("button");
+    unfavoriteBtn.textContent = "★";
+    unfavoriteBtn.className = "unfavorite-btn";
+    unfavoriteBtn.setAttribute("aria-label", "즐겨찾기 해제");
+
+    unfavoriteBtn.addEventListener("click", function () {
+      // ── localStorage에서 이 id 제거 ──
+      const currentFavs = getFavorites();
+      const updated = currentFavs.filter(function (fav) { return fav !== id; });
+      localStorage.setItem("philosophy-favorites", JSON.stringify(updated));
+
+      // ── 오늘 명제를 해제한 경우 → 위쪽 메인 별 버튼도 ☆로 동기화 ──
+      if (id === todayProposition.id) {
+        favoriteBtn.textContent = "☆";
+        favoriteBtn.classList.remove("favorited");
+        // 두 별이 따로 노는 것처럼 보이지 않도록 동기화
+      }
+
+      renderFavorites();   // 목록 다시 그림 → 해제된 카드가 사라짐
+    });
+
+    li.appendChild(textEl);
+    li.appendChild(philosopherEl);
+    li.appendChild(unfavoriteBtn);
+    favoritesList.appendChild(li);
+  });
+}
+
+
 // ── 페이지가 열릴 때 바로 기록 목록 표시 ──
 renderHistory();
 // 이 한 줄이 없으면, 저장을 눌러야만 기록이 보임
 // 이 한 줄이 있으면, 새로고침해도 localStorage에서 기록을 불러와 즉시 표시
+
+// ── 페이지가 열릴 때 즐겨찾기 섹션도 바로 표시 ──
+renderFavorites();

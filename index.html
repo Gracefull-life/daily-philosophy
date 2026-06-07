@@ -45,6 +45,10 @@
 
       <h2>오늘의 명제</h2>
 
+      <button id="favorite-btn" aria-label="즐겨찾기 추가/해제">☆</button>
+      <!-- ☆ = 즐겨찾기 안 된 상태. JS가 클릭 시 ★로 바꿔줌 -->
+      <!-- aria-label = 버튼 설명. 스크린리더용이지만 title 역할도 함 -->
+
       <blockquote id="proposition-text">
         명제가 여기 표시됩니다
       </blockquote>
@@ -101,6 +105,15 @@
       <ul id="history-list">
         <!-- ul = 순서 없는 목록 (bullet point 목록) -->
         <!-- 지금은 비어 있음. app.js가 저장된 기록을 여기에 하나씩 추가할 예정 -->
+      </ul>
+    </section>
+
+    <!-- ⑤ 즐겨찾기한 명제 모음 -->
+    <section id="favorites-section">
+      <h2>즐겨찾기한 명제</h2>
+
+      <ul id="favorites-list">
+        <!-- app.js의 renderFavorites()가 즐겨찾기된 명제를 여기에 채워 넣음 -->
       </ul>
     </section>
 

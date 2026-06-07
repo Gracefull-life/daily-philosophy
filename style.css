@@ -140,6 +140,44 @@ h2 {
 /* ═══════════════════════════════════════════════
    오늘의 명제 — 앱의 주인공
 ═══════════════════════════════════════════════ */
+
+/* 별 버튼을 절대 위치로 놓기 위한 기준점 */
+#proposition-section {
+  position: relative;
+}
+
+/* 즐겨찾기 별 버튼 */
+#favorite-btn {
+  position: absolute;
+  top: 0;
+  right: 0;           /* 섹션 오른쪽 위 모서리 */
+
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+#favorite-btn:hover {
+  background-color: var(--surface);
+  border-color: var(--border-dark);
+}
+
+/* 즐겨찾기 활성 상태 — JS가 .favorited 클래스를 추가할 때 적용 */
+#favorite-btn.favorited {
+  color: var(--accent);         /* 포인트 색(갈색)으로 별이 채워진 느낌 */
+  border-color: var(--accent);
+}
+
+
 #proposition-section blockquote {
   font-size: 1.2rem;
   line-height: 2.05;
@@ -361,6 +399,76 @@ button {
 /* 다크모드에서 토글 버튼 아이콘 변경 */
 [data-theme="dark"] #theme-toggle::before { content: "☀️"; }
 #theme-toggle::before                     { content: "🌙"; }
+
+
+/* ═══════════════════════════════════════════════
+   즐겨찾기한 명제
+═══════════════════════════════════════════════ */
+#favorites-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 즐겨찾기 카드 — history 카드보다 명제가 주인공 */
+#favorites-list li {
+  position: relative;     /* ★ 해제 버튼을 절대 위치로 놓기 위한 기준점 */
+  padding: 20px 52px 20px 24px;
+  /* 오른쪽 padding을 넉넉히 → ★ 버튼 자리 확보 */
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+/* 빈 상태 안내 메시지 */
+#favorites-list li.favorites-empty {
+  padding: 20px 24px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+  border-style: dashed;   /* 점선 테두리로 "비어있음" 느낌 */
+}
+
+/* 명제 텍스트 줄 */
+#favorites-list li p:first-child {
+  font-size: 1rem;
+  line-height: 1.85;
+  margin-bottom: 8px;
+}
+
+/* 철학자 이름 줄 */
+#favorites-list li p:last-of-type {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+}
+
+/* ★ 해제 버튼 — 카드 오른쪽 중앙에 고정 */
+.unfavorite-btn {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  /* translateY(-50%) = 버튼 자신의 높이 절반만큼 위로 올려 수직 가운데 정렬 */
+
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-size: 0.95rem;
+
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--accent);   /* 즐겨찾기 색(갈색)으로 채워진 별 */
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.unfavorite-btn:hover {
+  background-color: var(--surface-alt);
+  border-color: var(--border-dark);
+}
 
 
 /* ═══════════════════════════════════════════════
