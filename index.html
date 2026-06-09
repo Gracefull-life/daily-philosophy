@@ -36,8 +36,19 @@
     <!-- id="today-date" : 나중에 app.js가 이 자리를 찾아서 실제 날짜로 바꿔 넣을 예정 -->
   </header>
 
+  <!-- 탭 버튼 목록 -->
+  <!-- data-panel = 이 버튼이 어느 패널을 열지 연결하는 이름표 -->
+  <!-- JS는 이 이름표를 읽어서 해당 id의 패널을 열고 나머지를 숨김 -->
+  <!-- 탭을 추가하려면 버튼 하나 + 패널 div 하나만 추가하면 됨 (JS 수정 불필요) -->
+  <nav id="tab-nav">
+    <button class="tab-btn" data-panel="panel-today">오늘</button>
+    <button class="tab-btn" data-panel="panel-archive">저장소</button>
+  </nav>
+
   <main>
-  <!-- main = 페이지의 핵심 내용 영역. header/footer를 제외한 본문 -->
+
+    <!-- ★ "오늘" 탭 패널: 명제 + 내 생각 -->
+    <div id="panel-today" class="tab-panel">
 
     <!-- ② 오늘의 명제 카드 -->
     <section id="proposition-section">
@@ -98,6 +109,12 @@
       </div>
     </section>
 
+    </div>
+    <!-- /panel-today 끝 -->
+
+    <!-- ★ "저장소" 탭 패널: 지난 기록 + 즐겨찾기 -->
+    <div id="panel-archive" class="tab-panel">
+
     <!-- ④ 과거 기록 목록 영역 -->
     <section id="history-section">
       <h2>지난 기록</h2>
@@ -116,6 +133,9 @@
         <!-- app.js의 renderFavorites()가 즐겨찾기된 명제를 여기에 채워 넣음 -->
       </ul>
     </section>
+
+    </div>
+    <!-- /panel-archive 끝 -->
 
   </main>
 

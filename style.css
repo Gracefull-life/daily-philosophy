@@ -9,6 +9,59 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&display=swap');
 
 
+/* ═══════════════════════════════════════════════
+   탭 내비게이션
+═══════════════════════════════════════════════ */
+
+/* 탭 버튼 줄 전체 */
+#tab-nav {
+  max-width: 680px;           /* header·main 과 동일한 폭 제한 */
+  margin: 0 auto 0;
+  display: flex;              /* 버튼들을 가로로 나열 */
+  border-bottom: 1px solid var(--border);
+}
+
+/* 탭 버튼 하나 */
+.tab-btn {
+  padding: 10px 28px;
+  font-size: 0.88rem;
+  letter-spacing: 0.08em;
+
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  /* 아래 테두리를 2px 확보해두고 평소엔 투명 — 활성 시 색을 넣음 */
+
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-bottom: -1px;
+  /* -1px : #tab-nav 아래 border와 버튼 아래 border가 겹쳐서 이음새 없이 이어짐 */
+
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text);
+}
+
+/* 활성 탭 — 아래 포인트 선 + 텍스트 진하게 */
+.tab-btn.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);   /* 갈색 포인트 선 */
+}
+
+/* 탭 패널 기본 상태: 숨김 */
+.tab-panel {
+  display: none;
+  /* display: none = 공간도 차지 안 하고 완전히 사라짐 */
+}
+
+/* 활성 패널만 표시 */
+.tab-panel.active {
+  display: block;
+}
+
+
 /* ── 색상 변수 ──────────────────────────────────
    이 변수들만 바꾸면 전체 색이 바뀜.
    다크모드 추가 시 여기에 @media (prefers-color-scheme: dark) { :root { ... } } 만 추가하면 됨

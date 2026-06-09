@@ -650,6 +650,46 @@ function renderFavorites() {
 }
 
 
+// ─────────────────────────────────────────────
+// 8단계: 탭 전환
+// ─────────────────────────────────────────────
+
+const tabBtns   = document.querySelectorAll(".tab-btn");
+const tabPanels = document.querySelectorAll(".tab-panel");
+// querySelectorAll = 조건에 맞는 요소 전부를 목록(NodeList)으로 반환
+// tabBtns   = [오늘 버튼, 저장소 버튼, ...]  — 탭 개수만큼 자동으로 담김
+// tabPanels = [panel-today, panel-archive, ...] — 동일
+
+tabBtns.forEach(function (btn) {
+  // 모든 탭 버튼에 클릭 리스너를 붙이는 loop
+  // 탭이 10개여도 이 코드는 그대로 — 하드코딩 없음
+
+  btn.addEventListener("click", function () {
+
+    // ① 모든 버튼·패널 비활성화
+    tabBtns.forEach(function (b) { b.classList.remove("active"); });
+    tabPanels.forEach(function (p) { p.classList.remove("active"); });
+    // classList.remove("active") = active 클래스를 제거 → 버튼은 흐려지고 패널은 숨겨짐
+
+    // ② 클릭된 버튼만 활성화
+    btn.classList.add("active");
+
+    // ③ 버튼의 data-panel 값으로 열 패널을 찾아서 활성화
+    const panelId = btn.dataset.panel;
+    // btn.dataset.panel = HTML의 data-panel="panel-today" 값을 읽음
+    // 예: "panel-today"
+
+    document.getElementById(panelId).classList.add("active");
+    // getElementById로 패널 div를 찾아 active 클래스 추가 → display: block 으로 나타남
+  });
+});
+
+// 페이지 열릴 때 첫 번째 탭(오늘)을 기본으로 활성화
+tabBtns[0].click();
+// tabBtns[0] = 목록의 첫 번째 버튼 (HTML에서 맨 위에 있는 탭)
+// .click()   = 이 버튼을 코드로 클릭한 것과 동일한 효과 — 위의 클릭 리스너가 실행됨
+
+
 // ── 페이지가 열릴 때 바로 기록 목록 표시 ──
 renderHistory();
 // 이 한 줄이 없으면, 저장을 눌러야만 기록이 보임
