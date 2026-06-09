@@ -325,7 +325,7 @@ function renderHistory() {
   // ── 기록이 하나도 없을 때 안내 메시지 표시 ──
   if (savedRaw === null) {
     const emptyMsg = document.createElement("li");
-    emptyMsg.textContent = "아직 기록이 없어요. 오늘의 명제에 첫 생각을 남겨보세요.";
+    emptyMsg.textContent = "아직 기록이 없어요. 오늘의 문장에 첫 생각을 남겨보세요.";
     historyList.appendChild(emptyMsg);
     return;
     // return = 여기서 함수 종료. 아래 코드는 실행 안 됨
@@ -338,7 +338,7 @@ function renderHistory() {
   if (entries.length === 0) {
     // .length = 배열 안의 항목 수. 0이면 비어 있음
     const emptyMsg = document.createElement("li");
-    emptyMsg.textContent = "아직 기록이 없어요. 오늘의 명제에 첫 생각을 남겨보세요.";
+    emptyMsg.textContent = "아직 기록이 없어요. 오늘의 문장에 첫 생각을 남겨보세요.";
     historyList.appendChild(emptyMsg);
     return;
   }
@@ -591,7 +591,7 @@ function renderFavorites() {
   // ── 즐겨찾기가 없을 때 안내 ──
   if (favIds.length === 0) {
     const emptyMsg = document.createElement("li");
-    emptyMsg.textContent = "아직 즐겨찾기한 명제가 없어요.";
+    emptyMsg.textContent = "아직 즐겨찾기한 문장이 없어요.";
     emptyMsg.className = "favorites-empty";
     // className = CSS의 .favorites-empty 스타일(점선 테두리, 중앙 정렬) 적용
     favoritesList.appendChild(emptyMsg);

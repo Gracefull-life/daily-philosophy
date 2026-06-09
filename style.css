@@ -184,8 +184,9 @@ h2 {
   font-weight: 400;
   letter-spacing: 0.18em;
   color: var(--text-muted);
-  padding-bottom: 12px;
-  margin-bottom: 22px;
+  margin-top: 16px;       /* 변경 8→16: padding-bottom(16px)과 맞춰 대칭 */
+  padding-bottom: 16px;   /* 변경 12→16: 라벨 텍스트~밑줄 사이 */
+  margin-bottom: 16px;    /* 변경 22→16: 밑줄~내용 사이. padding-bottom과 맞춰 대칭 */
   border-bottom: 1px solid var(--border);
 }
 

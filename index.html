@@ -54,7 +54,7 @@
     <section id="proposition-section">
       <!-- section = 관련 내용을 묶는 구역. id로 이름표를 붙여 나중에 JS가 찾을 수 있게 함 -->
 
-      <h2>오늘의 명제</h2>
+      <h2>오늘의 문장</h2>
 
       <button id="favorite-btn" aria-label="즐겨찾기 추가/해제">☆</button>
       <!-- ☆ = 즐겨찾기 안 된 상태. JS가 클릭 시 ★로 바꿔줌 -->
@@ -78,7 +78,7 @@
       <!-- 입력해도 사라지지 않는 고정 안내 문구 -->
       <!-- placeholder와 달리 항상 보임 -->
 
-      <textarea id="my-thought" rows="6" placeholder="정답은 없어요. 떠오르는 대로 적어보세요."></textarea>
+      <textarea id="my-thought" rows="6" placeholder="이 말에 동의하시나요? 아니라면 왜 그런가요? 그 이유부터 적어보세요."></textarea>
       <!-- textarea = 여러 줄 텍스트 입력창 -->
       <!-- rows="6" : 입력창 높이 (6줄짜리) -->
       <!-- placeholder : 아무것도 안 적었을 때 흐리게 보이는 안내 문구 (입력 시작하면 사라짐) -->
@@ -127,7 +127,7 @@
 
     <!-- ⑤ 즐겨찾기한 명제 모음 -->
     <section id="favorites-section">
-      <h2>즐겨찾기한 명제</h2>
+      <h2>즐겨찾기한 문장</h2>
 
       <ul id="favorites-list">
         <!-- app.js의 renderFavorites()가 즐겨찾기된 명제를 여기에 채워 넣음 -->
