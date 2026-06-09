@@ -336,10 +336,42 @@ button {
 
 /* 기록 카드 한 장 */
 #history-list li {
-  padding: 20px 26px;
+  position: relative;              /* 별 버튼을 절대 위치로 놓기 위한 기준점 */
+  padding: 20px 46px 20px 26px;   /* 오른쪽 padding 넉넉히 → 별 버튼 자리 확보 */
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
+}
+
+/* 기록 카드 안 즐겨찾기 별 버튼 */
+.history-fav-btn {
+  position: absolute;
+  top: 14px;
+  right: 12px;
+
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 0.95rem;
+  line-height: 1;
+
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-faint);   /* 기본은 흐리게 — 카드 내용에 집중 */
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.history-fav-btn:hover {
+  color: var(--text-muted);
+  border-color: var(--border-dark);
+}
+
+/* 즐겨찾기 활성 상태 */
+.history-fav-btn.favorited {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* 날짜 줄 */

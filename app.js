@@ -364,10 +364,55 @@ function renderHistory() {
     const thoughtEl = document.createElement("p");
     thoughtEl.textContent = entry.thought;
 
+    // ── 카드 오른쪽 위 즐겨찾기 별 버튼 ──
+    const histFavBtn = document.createElement("button");
+    histFavBtn.className = "history-fav-btn";
+    histFavBtn.dataset.propId = entry.propositionId;
+    // dataset.propId = 이 버튼에 "어떤 명제의 버튼인지" 데이터를 심어둠
+    // HTML에서 data-prop-id="4" 처럼 보임
+    // 나중에 querySelectorAll(".history-fav-btn[data-prop-id='4']") 로 같은 명제 버튼 전부 찾을 때 씀
+
+    const isFav = getFavorites().includes(entry.propositionId);
+    // 이 명제가 현재 즐겨찾기 목록에 있는지 확인
+    histFavBtn.textContent = isFav ? "★" : "☆";
+    // 조건 ? A : B = 조건이 true면 A, false면 B (삼항 연산자)
+    if (isFav) histFavBtn.classList.add("favorited");
+
+    histFavBtn.addEventListener("click", function () {
+      const propId = entry.propositionId;
+      const currentFavs = getFavorites();
+
+      if (currentFavs.includes(propId)) {
+        // 즐겨찾기 해제
+        const updated = currentFavs.filter(function (fav) { return fav !== propId; });
+        localStorage.setItem("philosophy-favorites", JSON.stringify(updated));
+        updateHistoryStars(propId, false);
+        // 오늘 명제와 같으면 메인 별 버튼도 동기화
+        if (propId === todayProposition.id) {
+          favoriteBtn.textContent = "☆";
+          favoriteBtn.classList.remove("favorited");
+        }
+      } else {
+        // 즐겨찾기 추가
+        currentFavs.push(propId);
+        localStorage.setItem("philosophy-favorites", JSON.stringify(currentFavs));
+        updateHistoryStars(propId, true);
+        if (propId === todayProposition.id) {
+          favoriteBtn.textContent = "★";
+          favoriteBtn.classList.add("favorited");
+        }
+      }
+
+      renderFavorites();
+      // 즐겨찾기 섹션 즉시 갱신
+    });
+
     // ── 만든 요소들을 li 안에 차례로 넣기 ──
     li.appendChild(dateEl);
     li.appendChild(propositionEl);
     li.appendChild(thoughtEl);
+    li.appendChild(histFavBtn);
+    // 별 버튼은 CSS로 absolute 위치 지정돼 있어서 appendChild 순서가 시각적 위치에 영향 없음
 
     // ── 수정 흔적 배지: 수정한 기록에만 표시 ──
     if (entry.edited === true) {
@@ -500,6 +545,33 @@ function saveEditedThought(index, newText) {
   // ── 화면 새로 그리기 ──
   renderHistory();
   // 수정된 내용이 바로 반영되어 보임
+}
+
+
+// ─────────────────────────────────────────────
+// 6-1단계: history 별 버튼 일괄 동기화 헬퍼
+// ─────────────────────────────────────────────
+
+function updateHistoryStars(propId, isFavorited) {
+  // propId      = 동기화할 명제 id
+  // isFavorited = true면 ★로, false면 ☆로 바꿈
+
+  const selector = ".history-fav-btn[data-prop-id='" + propId + "']";
+  // selector = CSS 선택자 문자열
+  // ".history-fav-btn"         → 클래스가 history-fav-btn인 요소
+  // "[data-prop-id='숫자']"    → data-prop-id 속성이 이 숫자인 요소
+  // 두 조건을 합치면 "이 명제 id를 가진 history 별 버튼 전부"를 의미
+
+  document.querySelectorAll(selector).forEach(function (btn) {
+    // querySelectorAll = 조건에 맞는 요소를 전부 찾아 목록으로 반환
+    // (getElementById는 하나, querySelectorAll은 여러 개)
+    btn.textContent = isFavorited ? "★" : "☆";
+    if (isFavorited) {
+      btn.classList.add("favorited");
+    } else {
+      btn.classList.remove("favorited");
+    }
+  });
 }
 
 
