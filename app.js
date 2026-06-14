@@ -3,6 +3,47 @@
 // 이 파일은 propositions.js가 먼저 로드된 뒤에 실행됨 (index.html에서 순서가 중요)
 
 // ─────────────────────────────────────────────
+// 안전 저장 헬퍼 — 다른 코드보다 먼저 정의
+// 일부 브라우저(사파리 쿠키 차단·사생활 보호 모드)에서는
+// localStorage에 "접근만 해도" 에러가 나서 app.js 전체가 멈출 수 있음.
+// 그래서 localStorage를 직접 부르지 않고 아래 함수로 감싸서 사용함.
+// 에러가 나도 try/catch가 잡아내므로 앱이 죽지 않음.
+// ─────────────────────────────────────────────
+
+function safeGet(key) {
+  // 값을 안전하게 읽어옴. 실패하면 null 반환
+  try {
+    return localStorage.getItem(key);
+  } catch (e) {
+    return null;
+  }
+}
+
+function safeSet(key, value) {
+  // 값을 안전하게 저장함. 성공하면 true, 실패하면 false 반환
+  // 반환값으로 "저장이 실제로 됐는지"를 확인할 수 있음
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function safeGetJSON(key, fallback) {
+  // 값을 읽어 JSON으로 변환까지 안전하게 처리
+  // 값이 없거나 / 읽기 실패 / 변환 실패 시 fallback([] 또는 null)을 반환
+  try {
+    const raw = safeGet(key);
+    if (raw === null) return fallback;
+    return JSON.parse(raw);
+  } catch (e) {
+    return fallback;
+  }
+}
+
+
+// ─────────────────────────────────────────────
 // 0단계: 테마(라이트/다크) — 맨 먼저 실행
 // 다른 코드보다 앞에 있어야 페이지가 그려지기 전에 테마가 적용되어
 // 화면이 깜빡이지 않음
@@ -12,8 +53,8 @@ const themeToggleBtn = document.getElementById("theme-toggle");
 // HTML의 <button id="theme-toggle"> 을 찾아서 변수에 담음
 
 // ── 저장된 테마를 불러와서 바로 적용 ──
-const savedTheme = localStorage.getItem("theme");
-// localStorage.getItem("theme") = 이전에 저장해둔 값을 꺼냄
+const savedTheme = safeGet("theme");
+// safeGet("theme") = 이전에 저장해둔 값을 안전하게 꺼냄
 // 처음 방문이면 null, 이전에 다크로 바꿨으면 "dark", 라이트면 "light"
 
 if (savedTheme === "dark") {
@@ -34,13 +75,13 @@ themeToggleBtn.addEventListener("click", function () {
     // 현재 다크 → 라이트로 전환
     document.documentElement.removeAttribute("data-theme");
     // removeAttribute = 속성을 완전히 제거. :root 변수가 다시 작동함
-    localStorage.setItem("theme", "light");
+    safeSet("theme", "light");
     // 다음에 이 페이지를 열 때도 라이트모드로 시작하도록 저장
 
   } else {
     // 현재 라이트 → 다크로 전환
     document.documentElement.setAttribute("data-theme", "dark");
-    localStorage.setItem("theme", "dark");
+    safeSet("theme", "dark");
     // 다음에 열 때도 다크모드로 시작하도록 저장
   }
 });
@@ -113,12 +154,9 @@ const favoriteBtn = document.getElementById("favorite-btn");
 // 즐겨찾기 목록을 localStorage에서 읽어오는 함수
 // 여러 곳에서 쓰이므로 함수로 한 번 묶어둠
 function getFavorites() {
-  const raw = localStorage.getItem("philosophy-favorites");
-  // raw = "[1, 4, 10]" 같은 문자열 / 한 번도 저장 안 했으면 null
-
-  return raw ? JSON.parse(raw) : [];
-  // raw ? A : B = raw가 null이 아니면 A, null이면 B
-  // → 저장된 게 있으면 배열로 변환해서 반환, 없으면 빈 배열 반환
+  return safeGetJSON("philosophy-favorites", []);
+  // safeGetJSON = 읽기 + JSON 변환을 한 번에 안전하게 처리
+  // 저장된 게 있으면 배열로 변환해 반환, 없거나 실패하면 빈 배열([]) 반환
 }
 
 // ── 페이지 열릴 때: 오늘 명제가 이미 즐겨찾기 됐는지 확인 ──
@@ -138,7 +176,7 @@ favoriteBtn.addEventListener("click", function () {
   if (favorites.includes(id)) {
     // 이미 즐겨찾기 된 상태 → 해제
     const updated = favorites.filter(function (fav) { return fav !== id; });
-    localStorage.setItem("philosophy-favorites", JSON.stringify(updated));
+    safeSet("philosophy-favorites", JSON.stringify(updated));
     favoriteBtn.textContent = "☆";
     favoriteBtn.classList.remove("favorited");
     renderFavorites();   // 즐겨찾기 섹션에서 이 명제를 즉시 제거
@@ -146,7 +184,7 @@ favoriteBtn.addEventListener("click", function () {
   } else {
     // 즐겨찾기 안 된 상태 → 추가
     favorites.push(id);
-    localStorage.setItem("philosophy-favorites", JSON.stringify(favorites));
+    safeSet("philosophy-favorites", JSON.stringify(favorites));
     favoriteBtn.textContent = "★";
     favoriteBtn.classList.add("favorited");
     renderFavorites();   // 즐겨찾기 섹션에 이 명제를 즉시 추가
@@ -215,28 +253,25 @@ saveButton.addEventListener("click", function () {
     // 1시간 = 60 × 60 × 1000 = 3,600,000 ms
   };
 
-  // ── 기존 기록을 localStorage에서 불러오기 ──
-  const savedRaw = localStorage.getItem("philosophy-entries");
-  // getItem("키") = 해당 키로 저장된 값을 문자열로 가져옴. 없으면 null 반환
-
-  let entries = [];
+  // ── 기존 기록을 localStorage에서 안전하게 불러오기 ──
+  let entries = safeGetJSON("philosophy-entries", []);
+  // safeGetJSON = 읽기 + JSON 변환을 한 번에. 없거나 실패하면 빈 배열([]) 반환
   // let = 이후에 값을 재할당할 수 있는 변수 (const는 재할당 불가)
-
-  if (savedRaw !== null) {
-    entries = JSON.parse(savedRaw);
-    // JSON.parse() = 문자열을 JavaScript 배열/객체로 되돌림
-    // '[{"date":"..."}]' → [{ date: "..." }]
-  }
 
   // ── 새 항목을 배열 맨 앞에 추가 (최신 기록이 위에 오도록) ──
   entries.unshift(newEntry);
   // .unshift() = 배열 맨 앞에 삽입 (.push()는 맨 뒤에 삽입)
 
-  // ── 배열을 문자열로 변환 후 localStorage에 저장 ──
-  localStorage.setItem("philosophy-entries", JSON.stringify(entries));
-  // JSON.stringify() = 배열/객체를 문자열로 변환
-  // [{ date: "..." }] → '[{"date":"..."}]'
-  // setItem("키", "값") = 키-값 쌍으로 저장. 같은 키면 덮어씀
+  // ── 배열을 문자열로 변환 후 안전하게 저장 ──
+  const saved = safeSet("philosophy-entries", JSON.stringify(entries));
+  // safeSet 은 저장 성공 시 true, 실패 시 false 를 반환함
+
+  // ── 저장 실패 시: 사용자에게 알리고 여기서 중단 ──
+  // (입력창을 비우지 않고 멈춰서, 사용자가 쓴 글이 사라지지 않게 함)
+  if (!saved) {
+    saveFeedback.textContent = "이 브라우저에서는 저장이 안 돼요. 사생활 보호 모드를 꺼주세요.";
+    return;
+  }
 
   // ── 저장 완료 메시지 표시 ──
   saveFeedback.textContent = "저장됐어요 ✓";
@@ -317,30 +352,19 @@ function renderHistory() {
   // innerHTML = "" 은 해당 요소 안의 내용을 전부 삭제
   // 저장할 때마다 이 함수를 다시 호출하므로, 중복 표시를 막으려면 먼저 비워야 함
 
-  // ── localStorage에서 저장된 기록 꺼내오기 ──
-  const savedRaw = localStorage.getItem("philosophy-entries");
-  // getItem("키") = 해당 키로 저장된 값을 꺼냄. 아무것도 없으면 null 반환
-  // savedRaw는 아직 문자열 상태 → '[{"date":"...","thought":"..."},...]'
+  // ── localStorage에서 저장된 기록을 안전하게 꺼내오기 ──
+  const entries = safeGetJSON("philosophy-entries", []);
+  // safeGetJSON = 읽기 + JSON 변환. 없거나 실패하면 빈 배열([]) 반환
+  // (기존엔 "값 없음(null)"과 "빈 배열"을 따로 처리했지만, 둘 다 결과가 같으므로 하나로 합침)
 
   // ── 기록이 하나도 없을 때 안내 메시지 표시 ──
-  if (savedRaw === null) {
-    const emptyMsg = document.createElement("li");
-    emptyMsg.textContent = "아직 기록이 없어요. 오늘의 문장에 첫 생각을 남겨보세요.";
-    historyList.appendChild(emptyMsg);
-    return;
-    // return = 여기서 함수 종료. 아래 코드는 실행 안 됨
-  }
-
-  const entries = JSON.parse(savedRaw);
-  // JSON.parse() = 문자열을 JavaScript 배열로 되돌림
-  // '[{"date":"..."}]' → [{ date: "..." }, ...]
-
   if (entries.length === 0) {
     // .length = 배열 안의 항목 수. 0이면 비어 있음
     const emptyMsg = document.createElement("li");
     emptyMsg.textContent = "아직 기록이 없어요. 오늘의 문장에 첫 생각을 남겨보세요.";
     historyList.appendChild(emptyMsg);
     return;
+    // return = 여기서 함수 종료. 아래 코드는 실행 안 됨
   }
 
   // ── 기록이 있으면 하나씩 화면에 추가 ──
@@ -385,7 +409,7 @@ function renderHistory() {
       if (currentFavs.includes(propId)) {
         // 즐겨찾기 해제
         const updated = currentFavs.filter(function (fav) { return fav !== propId; });
-        localStorage.setItem("philosophy-favorites", JSON.stringify(updated));
+        safeSet("philosophy-favorites", JSON.stringify(updated));
         updateHistoryStars(propId, false);
         // 오늘 명제와 같으면 메인 별 버튼도 동기화
         if (propId === todayProposition.id) {
@@ -395,7 +419,7 @@ function renderHistory() {
       } else {
         // 즐겨찾기 추가
         currentFavs.push(propId);
-        localStorage.setItem("philosophy-favorites", JSON.stringify(currentFavs));
+        safeSet("philosophy-favorites", JSON.stringify(currentFavs));
         updateHistoryStars(propId, true);
         if (propId === todayProposition.id) {
           favoriteBtn.textContent = "★";
@@ -522,11 +546,9 @@ function saveEditedThought(index, newText) {
   // index   = 수정할 항목이 배열의 몇 번째인지
   // newText = 사용자가 새로 입력한 텍스트
 
-  // ── localStorage에서 전체 기록 불러오기 ──
-  const savedRaw = localStorage.getItem("philosophy-entries");
-  if (savedRaw === null) return;   // 기록이 없으면 아무것도 안 함
-
-  const entries = JSON.parse(savedRaw);
+  // ── localStorage에서 전체 기록을 안전하게 불러오기 ──
+  const entries = safeGetJSON("philosophy-entries", null);
+  if (entries === null) return;   // 기록이 없거나 읽기 실패면 아무것도 안 함
 
   // ── 해당 항목의 thought만 새 텍스트로 교체, 수정 흔적 기록 ──
   entries[index].thought   = newText;
@@ -539,8 +561,8 @@ function saveEditedThought(index, newText) {
   entries[index].editedAt  = Date.now();
   // editedAt = 수정한 이 순간의 timestamp → 배지에 "수정됨 · 6월 7일 14시 03분" 식으로 표시
 
-  // ── 수정된 배열을 localStorage에 다시 저장 ──
-  localStorage.setItem("philosophy-entries", JSON.stringify(entries));
+  // ── 수정된 배열을 localStorage에 안전하게 다시 저장 ──
+  safeSet("philosophy-entries", JSON.stringify(entries));
 
   // ── 화면 새로 그리기 ──
   renderHistory();
@@ -630,7 +652,7 @@ function renderFavorites() {
       // ── localStorage에서 이 id 제거 ──
       const currentFavs = getFavorites();
       const updated = currentFavs.filter(function (fav) { return fav !== id; });
-      localStorage.setItem("philosophy-favorites", JSON.stringify(updated));
+      safeSet("philosophy-favorites", JSON.stringify(updated));
 
       // ── 오늘 명제를 해제한 경우 → 위쪽 메인 별 버튼도 ☆로 동기화 ──
       if (id === todayProposition.id) {
