@@ -237,6 +237,7 @@ h2 {
   line-height: 2.05;
   padding: 26px 30px;
   margin: 0 0 16px;
+  overflow-wrap: anywhere;   /* 띄어쓰기 없는 긴 글도 어디서든 강제 줄바꿈 */
 
   /* 왼쪽 선: 주인공답게 살짝 강조 */
   border-left: 3px solid var(--accent);
@@ -395,6 +396,8 @@ button {
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
+  overflow-wrap: anywhere;   /* 띄어쓰기 없는 긴 글도 어디서든 강제 줄바꿈 */
+  min-width: 0;              /* flex 아이템이 내용폭만큼 커지지 않고 줄어들 수 있게 */
 }
 
 /* 기록 카드 안 즐겨찾기 별 버튼 */
@@ -506,6 +509,8 @@ button {
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
+  overflow-wrap: anywhere;   /* 띄어쓰기 없는 긴 글도 어디서든 강제 줄바꿈 */
+  min-width: 0;              /* flex 아이템이 내용폭만큼 커지지 않고 줄어들 수 있게 */
 }
 
 /* 빈 상태 안내 메시지 */
